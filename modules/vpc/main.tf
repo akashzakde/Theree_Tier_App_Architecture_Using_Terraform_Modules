@@ -118,3 +118,83 @@ resource "aws_subnet" "private_data_subnet_az2" {
     Name    = "private data subnet az2"
   }
 }
+
+# create elastic ip for public subnet az1 NAT GW
+resource "aws_eip" "eip1" {
+  domain   = "vpc"
+}
+# create elastic ip for public subnet az2 NAT GW
+resource "aws_eip" "eip2" {
+  domain   = "vpc"
+}
+
+# create NAT Gateway for public subnet az 1
+resource "aws_nat_gateway" "nat_gw1" {
+  allocation_id = aws_eip.eip1.id
+  subnet_id     = aws_subnet.public_subnet_az1.id
+
+  tags = {
+    Name = "Public Subnet az1 Nat GW"
+  }
+}
+  # create NAT Gateway for public subnet az 2
+resource "aws_nat_gateway" "nat_gw2" {
+  allocation_id = aws_eip.eip2.id
+  subnet_id     = aws_subnet.public_subnet_az2.id
+
+  tags = {
+    Name = "Public Subnet az2 Nat GW"
+  }
+}
+
+# create private route table for az1 private subnet and add route for internet via nat gw
+resource "aws_route_table" "private_route_table_az1" {
+  vpc_id       = aws_vpc.vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_nat_gateway.nat_gw1.id
+  }
+
+  tags       = {
+    Name     = "Private route table az1"
+  }
+}
+
+# associate private app subnet az1 to "private route table az1"
+resource "aws_route_table_association" "private_subnet_az1_route_table_association1" {
+  subnet_id           = aws_subnet.private_app_subnet_az1.id
+  route_table_id      = aws_route_table.private_route_table_az1.id
+}
+
+# associate private data subnet az1 to "private route table az1"
+resource "aws_route_table_association" "private_subnet_az1_route_table_association2" {
+  subnet_id           = aws_subnet.private_data_subnet_az1.id
+  route_table_id      = aws_route_table.private_route_table_az1.id
+}
+
+# create private route table for az2 private subnet and add route for internet via nat gw
+resource "aws_route_table" "private_route_table_az2" {
+  vpc_id       = aws_vpc.vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_nat_gateway.nat_gw2.id
+  }
+
+  tags       = {
+    Name     = "Private route table az2"
+  }
+}
+
+# associate private app subnet az2 to "private route table az2"
+resource "aws_route_table_association" "private_subnet_az2_route_table_association1" {
+  subnet_id           = aws_subnet.private_app_subnet_az2.id
+  route_table_id      = aws_route_table.private_route_table_az2.id
+}
+
+# associate private data subnet az2 to "private route table az2"
+resource "aws_route_table_association" "private_subnet_az2_route_table_association2" {
+  subnet_id           = aws_subnet.private_data_subnet_az2.id
+  route_table_id      = aws_route_table.private_route_table_az2.id
+}

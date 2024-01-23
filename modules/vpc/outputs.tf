@@ -37,3 +37,13 @@ output "private_data_subnet_az2_id" {
 output "internet_gateway" {
   value = aws_internet_gateway.internet_gateway
 }
+
+###########
+
+output "nat_gw1" {
+  value = aws_nat_gateway.nat_gw1
+}
+
+output "nat_gw2" {
+  value = aws_nat_gateway.nat_gw2
+}
