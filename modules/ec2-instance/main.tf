@@ -28,24 +28,27 @@ resource "aws_default_subnet" "default_az1" {
 }*/
 
 # use data source to get a registered amazon linux 2 ami
-data "aws_ami" "amazon_linux_2" {
+data "aws_ami" "amazon-linux" {
   most_recent = true
-  owners      = ["amazon"]
-  
+  owners = ["amazon"]
   filter {
-    name   = "owner-alias"
-    values = ["amazon"]
+    name   = "name"
+    values = ["amzn2-ami-kernel*"]
   }
 
   filter {
-    name   = "name"
-    values = ["amzn2-ami-hvm*"]
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+  filter {
+    name = "architecture"
+    values = ["x86_64"]
   }
 }
 
 # launch the ec2 instance and install website
 resource "aws_instance" "ec2" {
-  ami                    = data.aws_ami.amazon_linux_2.id
+  ami                    = data.aws_ami.amazon-linux.id
   instance_type          = var.instance_type
   associate_public_ip_address = true
   subnet_id              = var.subnet_id
