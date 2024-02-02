@@ -1,6 +1,6 @@
 # Terraform Module Project
 
-This will create a complete VPC including 2 AZ's , 6 Subnets , 1 Internet GW, 2 Nat GW, 2 Route table , Security group & ec2 instance module .  
+This will create a complete VPC including 2 AZ's , 6 Subnets , 1 Internet GW, 2 Nat GW, 2 Route table , Security group & ec2 instance.  
 
 ### Below is VPC diagram 
 
